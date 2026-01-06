@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nurtureBEAST | Take-Home Estimator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              outfit: ['Outfit', 'sans-serif'],
+              jakarta: ['Plus Jakarta Sans', 'sans-serif'],
+            },
+            colors: {
+              emerald: {
+                50: '#ecfdf5',
+                100: '#d1fae5',
+                200: '#a7f3d0',
+                300: '#6ee7b7',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669',
+                700: '#047857',
+                800: '#065f46',
+                900: '#064e3b',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020617; 
+            --bg-light: #f8fafc;
+        }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            transition: background-color 0.4s ease;
+            min-height: 100vh;
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        body.dark {
+            background-color: var(--bg-deep);
+            color: #f1f5f9;
+        }
+
+        h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; }
+
+        .glass {
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark .glass {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(2, 6, 23, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .light .glass {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(15, 23, 42, 0.05);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(160px);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.15;
+            animation: float 25s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(60px, 40px) scale(1.1); }
+        }
+
+        .orb-1 { width: 50vw; height: 50vw; background: #10b981; top: -10vw; left: -10vw; }
+        .orb-2 { width: 60vw; height: 60vw; background: #fb923c; bottom: -20vw; right: -10vw; opacity: 0.1; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        #root { overflow-x: hidden; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="dark">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>
