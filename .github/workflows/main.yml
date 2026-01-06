@@ -2,14 +2,10 @@ name: Build and Sync Tools to Supabase
 
 on:
   push:
-    # Trigger on all files/folders
-    paths:
-      - '**'
-    # Specifically ignore changes to .gitignore
+    # This tells GitHub: "Run for every change EXCEPT these files"
     paths-ignore:
       - '.gitignore'
       - 'README.md'
-      - 'docs/**'
 
 jobs:
   deploy:
@@ -22,7 +18,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history to accurately detect changed folders
+          fetch-depth: 0 # Important: Fetch all history to compare changes
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,31 +34,44 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          # 1. Identify which tool subfolders in /tools/ have changed
-          # Comparison is between the current commit and the previous one
-          CHANGED_TOOLS=$(git diff --name-only HEAD^ HEAD | grep '^tools/' | cut -d/ -f2 | sort -u)
+          # 1. Identify which tool subfolders in /tools/ have changed.
+          # We compare the current commit (HEAD) with the previous one (HEAD~1)
+          # If it's a new repo with only 1 commit, we compare against an empty tree.
+          
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            BASE_COMMIT="HEAD~1"
+          else
+            BASE_COMMIT=$(git hash-object -t tree /dev/null)
+          fi
+
+          CHANGED_TOOLS=$(git diff --name-only $BASE_COMMIT HEAD | grep '^tools/' | cut -d/ -f2 | sort -u || true)
 
           if [ -z "$CHANGED_TOOLS" ]; then
-            echo "No changes detected in the tools directory. Skipping build."
+            echo "✅ No changes detected in the tools/ directory. Finishing job."
             exit 0
           fi
 
-          # 2. Loop through each changed tool and process it
+          # 2. Loop through each changed tool folder
           for SLUG in $CHANGED_TOOLS; do
             echo "------------------------------------------"
-            echo "Processing Tool: $SLUG"
+            echo "🔨 Building Tool: $SLUG"
             echo "------------------------------------------"
 
-            # Build the JS bundle for this specific tool
-            # Assuming your vite config handles the entry point dynamically or you have one per tool
+            # Check if index.jsx exists to prevent errors on deleted folders
+            if [ ! -f "tools/$SLUG/index.jsx" ]; then
+              echo "⚠️ tools/$SLUG/index.jsx not found. Skipping."
+              continue
+            fi
+
+            # Build the JS bundle
             npx vite build --outDir dist/$SLUG
 
             # Generate the SEO Snapshot (seo.txt)
             node scripts/generate-seo.mjs $SLUG
 
-            echo "Uploading $SLUG to Supabase..."
+            echo "📤 Uploading $SLUG to Supabase Storage..."
 
-            # Upload JS Bundle
+            # Upload JS Bundle (index.js is the standard output from our vite config)
             curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/$SLUG/bundle.js" \
             -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
             -H "Content-Type: application/javascript" \
@@ -76,5 +85,5 @@ jobs:
             -H "x-upsert: true" \
             --data-binary "@dist/$SLUG/seo.txt"
 
-            echo "Done with $SLUG"
+            echo "✨ $SLUG successfully synced."
           done
