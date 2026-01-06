@@ -1,74 +1,74 @@
-- name: Upload Assets to Supabase
-  env:
-    SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-    SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-    TOOL_SLUG: ${{ secrets.TOOL_SLUG }}
-  run: |
-    set -euo pipefail
+name: Upload Assets to Supabase
+env:
+  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  TOOL_SLUG: ${{ secrets.TOOL_SLUG }}
+run: |
+  set -euo pipefail
 
-    if [ -z "${TOOL_SLUG:-}" ]; then
-      echo "❌ TOOL_SLUG secret is missing or empty."
-      exit 1
-    fi
+  if [ -z "${TOOL_SLUG:-}" ]; then
+    echo "❌ TOOL_SLUG secret is missing or empty."
+    exit 1
+  fi
 
-    TOOL_HTML="dist/tool.html"
-    JS_FILE="dist/bundle.js"
-    CSS_FILE="dist/styles.css"
+  TOOL_HTML="dist/tool.html"
+  JS_FILE="dist/bundle.js"
+  CSS_FILE="dist/styles.css"
 
-    if [ ! -f "$TOOL_HTML" ]; then
-      echo "❌ Missing $TOOL_HTML (expected prerender output)."
-      exit 1
-    fi
+  if [ ! -f "$TOOL_HTML" ]; then
+    echo "❌ Missing $TOOL_HTML (expected prerender output)."
+    exit 1
+  fi
 
-    if [ ! -f "$JS_FILE" ]; then
-      echo "❌ Missing $JS_FILE"
-      exit 1
-    fi
+  if [ ! -f "$JS_FILE" ]; then
+    echo "❌ Missing $JS_FILE"
+    exit 1
+  fi
 
-    if [ ! -f "$CSS_FILE" ]; then
-      echo "❌ Missing $CSS_FILE"
-      exit 1
-    fi
+  if [ ! -f "$CSS_FILE" ]; then
+    echo "❌ Missing $CSS_FILE"
+    exit 1
+  fi
 
-    upload_file() {
-      local local_path="$1"
-      local storage_path="$2"
-      local content_type="$3"
+  upload_file() {
+    local local_path="$1"
+    local storage_path="$2"
+    local content_type="$3"
 
-      echo "⬆️ Uploading $local_path -> $storage_path"
+    echo "⬆️ Uploading $local_path -> $storage_path"
 
-      curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${TOOL_SLUG}/${storage_path}" \
-        -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-        -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-        -H "x-upsert: true" \
-        -H "Content-Type: ${content_type}" \
-        --data-binary "@${local_path}"
-    }
+    curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${TOOL_SLUG}/${storage_path}" \
+      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+      -H "x-upsert: true" \
+      -H "Content-Type: ${content_type}" \
+      --data-binary "@${local_path}"
+  }
 
-    upload_file "$TOOL_HTML" "tool.html" "text/html; charset=utf-8"
-    upload_file "$CSS_FILE" "styles.css" "text/css; charset=utf-8"
-    upload_file "$JS_FILE" "bundle.js" "application/javascript; charset=utf-8"
+  upload_file "$TOOL_HTML" "tool.html" "text/html; charset=utf-8"
+  upload_file "$CSS_FILE" "styles.css" "text/css; charset=utf-8"
+  upload_file "$JS_FILE" "bundle.js" "application/javascript; charset=utf-8"
 
-    if [ -d "dist/assets" ]; then
-      find dist/assets -type f | while read -r FILE; do
-        DEST="assets/${FILE#dist/assets/}"
+  if [ -d "dist/assets" ]; then
+    find dist/assets -type f | while read -r FILE; do
+      DEST="assets/${FILE#dist/assets/}"
 
-        CT="application/octet-stream"
-        case "$FILE" in
-          *.png) CT="image/png" ;;
-          *.jpg|*.jpeg) CT="image/jpeg" ;;
-          *.webp) CT="image/webp" ;;
-          *.svg) CT="image/svg+xml" ;;
-          *.gif) CT="image/gif" ;;
-          *.woff) CT="font/woff" ;;
-          *.woff2) CT="font/woff2" ;;
-          *.ttf) CT="font/ttf" ;;
-          *.otf) CT="font/otf" ;;
-          *.json) CT="application/json; charset=utf-8" ;;
-        esac
+      CT="application/octet-stream"
+      case "$FILE" in
+        *.png) CT="image/png" ;;
+        *.jpg|*.jpeg) CT="image/jpeg" ;;
+        *.webp) CT="image/webp" ;;
+        *.svg) CT="image/svg+xml" ;;
+        *.gif) CT="image/gif" ;;
+        *.woff) CT="font/woff" ;;
+        *.woff2) CT="font/woff2" ;;
+        *.ttf) CT="font/ttf" ;;
+        *.otf) CT="font/otf" ;;
+        *.json) CT="application/json; charset=utf-8" ;;
+      esac
 
-        upload_file "$FILE" "$DEST" "$CT"
-      done
-    fi
+      upload_file "$FILE" "$DEST" "$CT"
+    done
+  fi
 
-    echo "🎉 Synced ${TOOL_SLUG} successfully."
+  echo "🎉 Synced ${TOOL_SLUG} successfully."
