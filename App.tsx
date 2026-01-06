@@ -21,7 +21,7 @@ const App: React.FC = () => {
     closingCostsPercent: 1.5,
     proratedPropertyTaxes: 1450,
     repairCredits: 0,
-    otherFees: 450,
+    otherFees: 550,
   });
 
   useEffect(() => {

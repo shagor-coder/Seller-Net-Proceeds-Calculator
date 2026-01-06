@@ -1,27 +1,25 @@
-name: Build and Sync Tools to Supabase
+name: Build & Upload Assets to Supabase
 
 on:
   push:
-    # Run on any app code change
-    paths:
-      - "**"
-      - "!README.md"
-      - "!LEARNINGS.md"
-      - "!.github/**"
-      - "!.gitignore"
+    # Trigger on any code change
+    paths-ignore:
+      - ".gitignore"
+      - "README.md"
+
+# 1. HARDCODED SLUG NAME
+env:
+  TOOL_SLUG: "home-value-calculator"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Important: Fetch all history to compare changes
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,70 +28,46 @@ jobs:
           cache: "npm"
 
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Detect and Process Changed Tools
+      - name: Build Project
+        # Ensure your build script generates a 'dist' folder
+        run: npm run build
+
+      - name: Upload Assets to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          # 1. Identify which tool subfolders in /tools/ have changed.
-          # We compare the current commit (HEAD) with the previous one (HEAD~1)
-          # If it's a new repo with only 1 commit, we compare against an empty tree.
+          set -euo pipefail
 
-          if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            BASE_COMMIT="HEAD~1"
-          else
-            BASE_COMMIT=$(git hash-object -t tree /dev/null)
-          fi
+          # Find the files (handling potential Vite hashes in filenames)
+          HTML_FILE=$(find dist -name "index.html" | head -n 1)
+          JS_FILE=$(find dist -name "*.js" | head -n 1)
+          CSS_FILE=$(find dist -name "*.css" | head -n 1)
 
-          CHANGED_TOOLS=$(git diff --name-only $BASE_COMMIT HEAD | grep '^tools/' | cut -d/ -f2 | sort -u || true)
-
-          if [ -z "$CHANGED_TOOLS" ]; then
-            echo "✅ No changes detected in the tools/ directory."
-            echo "Building main app"
-            npm run build
-            echo "Main app built"
-            exit 0
-          fi
-
-          # 2. Loop through each changed tool folder
-          for SLUG in $CHANGED_TOOLS; do
-            echo "------------------------------------------"
-            echo "🔨 Building Tool: $SLUG"
-            echo "------------------------------------------"
-
-            # Check if index.jsx exists to prevent errors on deleted folders
-            if [ ! -f "tools/$SLUG/index.jsx" ]; then
-              echo "⚠️ tools/$SLUG/index.jsx not found. Skipping."
-              continue
-            fi
-
-            # Build the JS bundle
-            npx vite build --outDir dist/$SLUG
-
-            # Generate the SEO Snapshot (seo.txt)
-            node scripts/generate-seo.mjs $SLUG
-
-            echo "📤 Uploading $SLUG to Supabase Storage..."
-
-            # Upload JS Bundle (index.js is the standard output from our vite config)
-            curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/$SLUG/bundle.js" \
+          echo "📤 Uploading HTML Structure..."
+          curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/index.html" \
             -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "x-upsert: true" \
+            -H "Content-Type: text/html" \
+            --data-binary "@$HTML_FILE"
+
+          echo "📤 Uploading CSS Styles..."
+          curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/style.css" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "x-upsert: true" \
+            -H "Content-Type: text/css" \
+            --data-binary "@$CSS_FILE"
+
+          echo "📤 Uploading JS Bundle..."
+          curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/bundle.js" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "x-upsert: true" \
             -H "Content-Type: application/javascript" \
-            -H "x-upsert: true" \
-            --data-binary "@dist/$SLUG/index.js"
+            --data-binary "@$JS_FILE"
 
-            # Upload SEO Snapshot
-            curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/$SLUG/seo.txt" \
-            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-            -H "Content-Type: text/plain" \
-            -H "x-upsert: true" \
-            --data-binary "@dist/$SLUG/seo.txt"
-
-            echo "✨ $SLUG successfully synced."
-          done
-
-          echo "Building main app"
-          npm run build
-          echo "Main app built"
+          echo "✅ All assets synced for ${{ env.TOOL_SLUG }}"
