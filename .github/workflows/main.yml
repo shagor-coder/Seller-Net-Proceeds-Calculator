@@ -2,15 +2,18 @@ name: Build and Sync Tools to Supabase
 
 on:
   push:
-    # This tells GitHub: "Run for every change EXCEPT these files"
-    paths-ignore:
-      - '.gitignore'
-      - 'README.md'
+    # Run on any app code change
+    paths:
+      - "**"
+      - "!README.md"
+      - "!LEARNINGS.md"
+      - "!.github/**"
+      - "!.gitignore"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
 
@@ -24,7 +27,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install Dependencies
         run: npm install
@@ -37,7 +40,7 @@ jobs:
           # 1. Identify which tool subfolders in /tools/ have changed.
           # We compare the current commit (HEAD) with the previous one (HEAD~1)
           # If it's a new repo with only 1 commit, we compare against an empty tree.
-          
+
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             BASE_COMMIT="HEAD~1"
           else
