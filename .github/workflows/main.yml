@@ -1,74 +1,87 @@
-name: Upload Assets to Supabase
+name: Build & Upload Assets to Supabase
+
+on:
+  push:
+    paths-ignore:
+      - ".gitignore"
+      - "README.md"
+
 env:
-  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-  TOOL_SLUG: ${{ secrets.TOOL_SLUG }}
-run: |
-  set -euo pipefail
+  TOOL_SLUG: "home-value-calculator" # Hardcoded as requested
 
-  if [ -z "${TOOL_SLUG:-}" ]; then
-    echo "❌ TOOL_SLUG secret is missing or empty."
-    exit 1
-  fi
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
-  TOOL_HTML="dist/tool.html"
-  JS_FILE="dist/bundle.js"
-  CSS_FILE="dist/styles.css"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-  if [ ! -f "$TOOL_HTML" ]; then
-    echo "❌ Missing $TOOL_HTML (expected prerender output)."
-    exit 1
-  fi
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
 
-  if [ ! -f "$JS_FILE" ]; then
-    echo "❌ Missing $JS_FILE"
-    exit 1
-  fi
+      - name: Install Dependencies
+        run: npm ci
 
-  if [ ! -f "$CSS_FILE" ]; then
-    echo "❌ Missing $CSS_FILE"
-    exit 1
-  fi
+      - name: Build Project
+        run: npm run build
 
-  upload_file() {
-    local local_path="$1"
-    local storage_path="$2"
-    local content_type="$3"
+      - name: Debug Build Folder
+        run: |
+          echo "Listing dist folder contents:"
+          ls -R dist
 
-    echo "⬆️ Uploading $local_path -> $storage_path"
+      - name: Upload Assets to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          # 1. Identify files (Vite usually puts them in dist/ or dist/assets/)
+          # We search for files specifically to avoid picking up folders
+          HTML_FILE=$(find dist -name "index.html" | head -n 1)
+          JS_FILE=$(find dist -name "*.js" | head -n 1)
+          CSS_FILE=$(find dist -name "*.css" | head -n 1)
 
-    curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${TOOL_SLUG}/${storage_path}" \
-      -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-      -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-      -H "x-upsert: true" \
-      -H "Content-Type: ${content_type}" \
-      --data-binary "@${local_path}"
-  }
+          # Verify files exist before uploading
+          if [ -z "$HTML_FILE" ] || [ -z "$JS_FILE" ] || [ -z "$CSS_FILE" ]; then
+            echo "❌ Error: One or more required files (HTML, JS, CSS) were not found in the build folder."
+            exit 1
+          fi
 
-  upload_file "$TOOL_HTML" "tool.html" "text/html; charset=utf-8"
-  upload_file "$CSS_FILE" "styles.css" "text/css; charset=utf-8"
-  upload_file "$JS_FILE" "bundle.js" "application/javascript; charset=utf-8"
+          echo "✅ Files found. Starting upload..."
 
-  if [ -d "dist/assets" ]; then
-    find dist/assets -type f | while read -r FILE; do
-      DEST="assets/${FILE#dist/assets/}"
+          # Function to upload and print error if it fails
+          upload_file() {
+            local local_path=$1
+            local storage_path=$2
+            local content_type=$3
 
-      CT="application/octet-stream"
-      case "$FILE" in
-        *.png) CT="image/png" ;;
-        *.jpg|*.jpeg) CT="image/jpeg" ;;
-        *.webp) CT="image/webp" ;;
-        *.svg) CT="image/svg+xml" ;;
-        *.gif) CT="image/gif" ;;
-        *.woff) CT="font/woff" ;;
-        *.woff2) CT="font/woff2" ;;
-        *.ttf) CT="font/ttf" ;;
-        *.otf) CT="font/otf" ;;
-        *.json) CT="application/json; charset=utf-8" ;;
-      esac
+            echo "⬆️ Uploading $local_path to $storage_path..."
+            
+            # Using -w "%{http_code}" to catch the status and -o to see the error message
+            RESPONSE=$(curl -s -X POST "${{ secrets.SUPABASE_URL }}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/$storage_path" \
+              -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+              -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+              -H "x-upsert: true" \
+              -H "Content-Type: $content_type" \
+              --data-binary "@$local_path")
 
-      upload_file "$FILE" "$DEST" "$CT"
-    done
-  fi
+            if [[ "$RESPONSE" == *"error"* ]]; then
+              echo "❌ Supabase Error: $RESPONSE"
+              exit 1
+            else
+              echo "✅ Success"
+            fi
+          }
 
-  echo "🎉 Synced ${TOOL_SLUG} successfully."
+          # Execute Uploads
+          upload_file "$HTML_FILE" "index.html" "text/html"
+          upload_file "$CSS_FILE" "style.css" "text/css"
+          upload_file "$JS_FILE" "bundle.js" "application/javascript"
+
+          echo "🎉 All assets synced successfully for ${{ env.TOOL_SLUG }}"
