@@ -2,14 +2,12 @@ name: Build & Upload Assets to Supabase
 
 on:
   push:
-    # Trigger on any code change
     paths-ignore:
       - ".gitignore"
       - "README.md"
 
-# 1. HARDCODED SLUG NAME
 env:
-  TOOL_SLUG: "home-value-calculator"
+  TOOL_SLUG: "home-value-calculator" # Hardcoded as requested
 
 jobs:
   deploy:
@@ -31,43 +29,59 @@ jobs:
         run: npm ci
 
       - name: Build Project
-        # Ensure your build script generates a 'dist' folder
         run: npm run build
+
+      - name: Debug Build Folder
+        run: |
+          echo "Listing dist folder contents:"
+          ls -R dist
 
       - name: Upload Assets to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          set -euo pipefail
-
-          # Find the files (handling potential Vite hashes in filenames)
+          # 1. Identify files (Vite usually puts them in dist/ or dist/assets/)
+          # We search for files specifically to avoid picking up folders
           HTML_FILE=$(find dist -name "index.html" | head -n 1)
           JS_FILE=$(find dist -name "*.js" | head -n 1)
           CSS_FILE=$(find dist -name "*.css" | head -n 1)
 
-          echo "📤 Uploading HTML Structure..."
-          curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/index.html" \
-            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-            -H "x-upsert: true" \
-            -H "Content-Type: text/html" \
-            --data-binary "@$HTML_FILE"
+          # Verify files exist before uploading
+          if [ -z "$HTML_FILE" ] || [ -z "$JS_FILE" ] || [ -z "$CSS_FILE" ]; then
+            echo "❌ Error: One or more required files (HTML, JS, CSS) were not found in the build folder."
+            exit 1
+          fi
 
-          echo "📤 Uploading CSS Styles..."
-          curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/style.css" \
-            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-            -H "x-upsert: true" \
-            -H "Content-Type: text/css" \
-            --data-binary "@$CSS_FILE"
+          echo "✅ Files found. Starting upload..."
 
-          echo "📤 Uploading JS Bundle..."
-          curl -fSs -X POST "${SUPABASE_URL}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/bundle.js" \
-            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
-            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
-            -H "x-upsert: true" \
-            -H "Content-Type: application/javascript" \
-            --data-binary "@$JS_FILE"
+          # Function to upload and print error if it fails
+          upload_file() {
+            local local_path=$1
+            local storage_path=$2
+            local content_type=$3
 
-          echo "✅ All assets synced for ${{ env.TOOL_SLUG }}"
+            echo "⬆️ Uploading $local_path to $storage_path..."
+            
+            # Using -w "%{http_code}" to catch the status and -o to see the error message
+            RESPONSE=$(curl -s -X POST "${{ secrets.SUPABASE_URL }}/storage/v1/object/apps/${{ env.TOOL_SLUG }}/$storage_path" \
+              -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+              -H "apikey: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+              -H "x-upsert: true" \
+              -H "Content-Type: $content_type" \
+              --data-binary "@$local_path")
+
+            if [[ "$RESPONSE" == *"error"* ]]; then
+              echo "❌ Supabase Error: $RESPONSE"
+              exit 1
+            else
+              echo "✅ Success"
+            fi
+          }
+
+          # Execute Uploads
+          upload_file "$HTML_FILE" "index.html" "text/html"
+          upload_file "$CSS_FILE" "style.css" "text/css"
+          upload_file "$JS_FILE" "bundle.js" "application/javascript"
+
+          echo "🎉 All assets synced successfully for ${{ env.TOOL_SLUG }}"
