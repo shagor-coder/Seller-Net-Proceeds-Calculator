@@ -13,7 +13,7 @@ const App: React.FC = () => {
 
   const [costs, setCosts] = useState<SellerCosts>({
     salePrice: 5250000,
-    purchasePrice: 385000,
+    purchasePrice: 3850000,
     mortgagePayoff: 290000,
     otherLiens: 0,
     agentCommissionPercent: 3.0,

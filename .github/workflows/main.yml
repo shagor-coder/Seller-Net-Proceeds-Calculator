@@ -50,7 +50,10 @@ jobs:
           CHANGED_TOOLS=$(git diff --name-only $BASE_COMMIT HEAD | grep '^tools/' | cut -d/ -f2 | sort -u || true)
 
           if [ -z "$CHANGED_TOOLS" ]; then
-            echo "✅ No changes detected in the tools/ directory. Finishing job."
+            echo "✅ No changes detected in the tools/ directory."
+            echo "Building main app"
+            npm run build
+            echo "Main app built"
             exit 0
           fi
 
@@ -90,3 +93,7 @@ jobs:
 
             echo "✨ $SLUG successfully synced."
           done
+
+          echo "Building main app"
+          npm run build
+          echo "Main app built"
