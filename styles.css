@@ -1,0 +1,121 @@
+/* =========================
+   Tailwind layers
+========================= */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================
+   Tool root scope
+========================= */
+#tool {
+  --bg-deep: #020617;
+  --bg-light: #f8fafc;
+
+  font-family: "Plus Jakarta Sans", sans-serif;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Optional dark mode class ON TOOL ONLY */
+#tool.tool-dark {
+  background-color: var(--bg-deep);
+  color: #f1f5f9;
+}
+
+#tool.tool-light {
+  background-color: var(--bg-light);
+  color: #020617;
+}
+
+/* =========================
+   Headings (scoped)
+========================= */
+#tool h1,
+#tool h2,
+#tool h3,
+#tool h4 {
+  font-family: "Outfit", sans-serif;
+}
+
+/* =========================
+   Glass card utility (scoped)
+========================= */
+#tool .glass {
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#tool.tool-dark .glass {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.6) 0%,
+    rgba(2, 6, 23, 0.8) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+#tool.tool-light .glass {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+}
+
+/* =========================
+   Animated background orbs (scoped & contained)
+========================= */
+#tool .orb {
+  position: absolute; /* NOT fixed — stays inside tool */
+  border-radius: 50%;
+  filter: blur(160px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.15;
+  animation: tool-float 25s infinite alternate ease-in-out;
+}
+
+@keyframes tool-float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(60px, 40px) scale(1.1);
+  }
+}
+
+#tool .orb-1 {
+  width: 50vw;
+  height: 50vw;
+  background: #10b981;
+  top: -10vw;
+  left: -10vw;
+}
+
+#tool .orb-2 {
+  width: 60vw;
+  height: 60vw;
+  background: #fb923c;
+  bottom: -20vw;
+  right: -10vw;
+  opacity: 0.1;
+}
+
+/* =========================
+   Utilities (scoped)
+========================= */
+#tool .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+#tool .no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+#tool input::-webkit-outer-spin-button,
+#tool input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

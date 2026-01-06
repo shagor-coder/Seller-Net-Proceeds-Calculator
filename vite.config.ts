@@ -1,15 +1,21 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 3000,
-  },
   build: {
-    outDir: 'dist',
-    sourcemap: true,
+    outDir: "dist",
+    cssCodeSplit: false,
+    rollupOptions: {
+      input: "index.html",
+      output: {
+        entryFileNames: "bundle.js",
+        chunkFileNames: "chunks/[name].js",
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith(".css")) return "styles.css";
+          return "assets/[name][extname]";
+        },
+      },
+    },
   },
 });

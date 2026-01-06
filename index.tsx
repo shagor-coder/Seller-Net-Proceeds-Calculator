@@ -1,16 +1,16 @@
+import React from "react";
+import { hydrateRoot, createRoot } from "react-dom/client";
+import App from "./App";
+import "./styles.css";
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+// This div is on the client site: <div id="tool" data-key="..."></div>
+const el = document.getElementById("tool");
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+if (el) {
+  // If prerendered HTML exists, hydrate. Otherwise, fall back to client render.
+  if (el.hasChildNodes()) {
+    hydrateRoot(el, <App />);
+  } else {
+    createRoot(el).render(<App />);
+  }
 }
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
