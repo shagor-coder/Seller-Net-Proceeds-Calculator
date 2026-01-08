@@ -80,7 +80,7 @@ jobs:
           }
 
           # Execute Uploads
-          upload_file "$HTML_FILE" "index.html" "text/html"
+          upload_file "$HTML_FILE" "tool.html" "text/html"
           upload_file "$CSS_FILE" "style.css" "text/css"
           upload_file "$JS_FILE" "bundle.js" "application/javascript"
 
