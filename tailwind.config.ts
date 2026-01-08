@@ -1,6 +1,13 @@
 export default {
-  darkMode: "class",
-  content: ["./index.html", "./App.tsx", "./**/*.{tsx}"],
+  darkMode: ["class", '[class*="tool-dark"]'],
+  content: [
+    "./index.html",
+    "./App.tsx",
+    "./components/**/*.{tsx,ts}",
+    "./**/*.{tsx,ts}",
+    "!./node_modules/**",
+    "!./dist/**",
+  ],
   theme: {
     extend: {
       fontFamily: {

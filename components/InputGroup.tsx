@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Tag, History, Building2, FileText, Shield } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 interface InputGroupProps {
   label: string;
   value: number;
   onChange: (val: number) => void;
-  icon?: string;
+  icon?: LucideIcon;
   type?: "currency" | "percent";
   hideLabel?: boolean;
 }
@@ -14,33 +14,12 @@ const InputGroup: React.FC<InputGroupProps> = ({
   label,
   value,
   onChange,
-  icon,
+  icon: Icon,
   type = "currency",
   hideLabel = false,
 }) => {
   const [displayValue, setDisplayValue] = useState("");
 
-  // Map icon strings to Lucide components
-  const getIconComponent = (iconName: string) => {
-    switch (iconName) {
-      case "fa-tag":
-        return Tag;
-      case "fa-history":
-        return History;
-      case "fa-building-columns":
-        return Building2;
-      case "fa-file-invoice-dollar":
-        return FileText;
-      case "fa-shield-halved":
-        return Shield;
-      default:
-        return null;
-    }
-  };
-
-  const IconComponent = icon ? getIconComponent(icon) : null;
-
-  // When value changes from outside (e.g., initial state), format it correctly for display
   useEffect(() => {
     if (value === 0) {
       setDisplayValue("");
@@ -54,7 +33,6 @@ const InputGroup: React.FC<InputGroupProps> = ({
   }, [value, type]);
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    // On focus, strip commas to make editing easier
     if (type === "currency") {
       const raw = displayValue.replace(/,/g, "");
       setDisplayValue(raw);
@@ -63,7 +41,6 @@ const InputGroup: React.FC<InputGroupProps> = ({
   };
 
   const handleBlur = () => {
-    // On blur, re-format with commas
     if (type === "currency" && displayValue !== "") {
       const num = parseFloat(displayValue.replace(/,/g, ""));
       if (!isNaN(num)) {
@@ -74,7 +51,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawInput = e.target.value.replace(/[^0-9.]/g, "");
-    setDisplayValue(rawInput); // Immediate feedback
+    setDisplayValue(rawInput);
 
     const numValue = parseFloat(rawInput);
     if (isNaN(numValue)) {
@@ -92,14 +69,17 @@ const InputGroup: React.FC<InputGroupProps> = ({
         </label>
       )}
       <div className="relative">
-        {IconComponent && (
-          <div className="absolute inset-y-0 left-0 w-10 sm:w-12 flex items-center justify-center pointer-events-none z-20">
-            <IconComponent className="text-slate-400 dark:text-slate-600 group-focus-within:text-emerald-500 transition-colors duration-300 text-xs sm:text-sm" />
+        {Icon && (
+          <div className="absolute inset-y-0 left-0 w-12 flex items-center justify-center pointer-events-none z-20">
+            <Icon
+              size={16}
+              className="text-slate-400 dark:text-slate-600 group-focus-within:text-emerald-500 transition-colors duration-300"
+            />
           </div>
         )}
         {type === "currency" && (
-          <div className="absolute inset-y-0 left-8 sm:left-10 flex items-center pointer-events-none z-10">
-            <span className="text-slate-400 dark:text-slate-700 font-bold text-sm sm:text-base">
+          <div className="absolute inset-y-0 left-10 flex items-center pointer-events-none z-10">
+            <span className="text-slate-400 dark:text-slate-700 font-bold">
               $
             </span>
           </div>
@@ -110,15 +90,15 @@ const InputGroup: React.FC<InputGroupProps> = ({
           className={`block w-full 
             bg-slate-200/50 dark:bg-black/60
             border border-slate-300 dark:border-white/10 
-            rounded-2xl text-sm sm:text-base font-bold
+            rounded-2xl text-base font-bold
             text-slate-900 dark:text-white
             placeholder:text-slate-400 dark:placeholder:text-slate-800
             caret-emerald-500
             focus:outline-none focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/40 
             transition-all duration-300 
-            py-3 sm:py-3.5 
-            ${icon ? (type === "currency" ? "pl-12 sm:pl-14" : "pl-10 sm:pl-12") : "pl-4 sm:pl-6"}
-            ${type === "percent" ? "pr-10 sm:pr-12" : "pr-4 sm:pr-6"}`}
+            py-3.5 
+            ${Icon ? (type === "currency" ? "pl-14" : "pl-12") : "pl-6"}
+            ${type === "percent" ? "pr-12" : "pr-6"}`}
           value={displayValue}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -126,7 +106,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
           placeholder={type === "currency" ? "0" : "0"}
         />
         {type === "percent" && (
-          <div className="absolute inset-y-0 right-0 pr-3 sm:pr-5 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 right-0 pr-5 flex items-center pointer-events-none">
             <span className="text-slate-400 dark:text-slate-500 text-sm font-black">
               %
             </span>
