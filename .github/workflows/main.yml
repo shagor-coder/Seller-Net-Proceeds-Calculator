@@ -43,7 +43,7 @@ jobs:
         run: |
           # 1. Identify files (Vite usually puts them in dist/ or dist/assets/)
           # We search for files specifically to avoid picking up folders
-          HTML_FILE=$(find dist -name "index.html" | head -n 1)
+          HTML_FILE=$(find dist -name "tool.html" | head -n 1)
           JS_FILE=$(find dist -name "*.js" | head -n 1)
           CSS_FILE=$(find dist -name "*.css" | head -n 1)
 
