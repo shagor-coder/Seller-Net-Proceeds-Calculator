@@ -30,81 +30,81 @@ const BreakdownModal: React.FC<BreakdownModalProps> = ({
       : costs.closingCostsPercent;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-12">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 lg:p-12 overflow-y-auto">
       <div
         className="absolute inset-0 bg-slate-950/90 backdrop-blur-md transition-opacity cursor-pointer"
         onClick={onClose}
       ></div>
 
-      <div className="glass w-full max-w-2xl rounded-[3rem] overflow-hidden shadow-2xl relative z-10 animate-in zoom-in-95 duration-500 border border-white/10 flex flex-col">
-        <div className="p-8 lg:p-12 overflow-y-auto no-scrollbar max-h-[90vh]">
-          <div className="flex justify-between items-start mb-12">
-            <div>
+      <div className="glass w-full max-w-2xl rounded-[2rem] sm:rounded-[2.5rem] lg:rounded-[3rem] overflow-hidden shadow-2xl relative z-10 animate-in zoom-in-95 duration-500 border border-white/10 flex flex-col my-4 sm:my-8">
+        <div className="p-6 sm:p-8 lg:p-12 overflow-y-auto no-scrollbar max-h-[90vh]">
+          <div className="flex justify-between items-start mb-8 sm:mb-12 gap-4">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="text-emerald-500" size={14} />
-                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
+                <FileText className="text-emerald-500 shrink-0" size={14} />
+                <p className="text-[9px] sm:text-[10px] font-black text-emerald-500 uppercase tracking-widest">
                   Asset Integrity Audit
                 </p>
               </div>
-              <h2 className="text-3xl font-light tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-light tracking-tight break-words">
                 Full Net Recovery Sheet
               </h2>
             </div>
             <button
               onClick={onClose}
-              className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-emerald-500/20 transition-colors"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-emerald-500/20 transition-colors shrink-0"
             >
-              <X className="text-slate-400" size={18} />
+              <X className="text-slate-400" size={16} />
             </button>
           </div>
 
-          <div className="space-y-12 mb-12">
-            <div className="bg-white/5 p-8 rounded-3xl border border-white/5">
-              <div className="flex justify-between items-end mb-6">
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+          <div className="space-y-8 sm:space-y-12 mb-8 sm:mb-12">
+            <div className="bg-white/5 p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-white/5">
+              <div className="flex justify-between items-end mb-4 sm:mb-6 gap-2">
+                <p className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-widest">
                   Primary Revenue
                 </p>
-                <p className="text-xs font-bold text-slate-500">100%</p>
+                <p className="text-[10px] sm:text-xs font-bold text-slate-500 shrink-0">100%</p>
               </div>
-              <div className="flex justify-between items-center py-4 border-b border-white/5">
-                <span className="text-base font-medium text-slate-300">
+              <div className="flex justify-between items-center py-3 sm:py-4 border-b border-white/5 gap-4">
+                <span className="text-xs sm:text-sm font-medium text-slate-300 break-words min-w-0">
                   Contract Sale Price
                 </span>
-                <span className="text-xl font-bold text-emerald-500">
+                <span className="text-sm sm:text-base font-bold text-emerald-500 shrink-0">
                   ${(costs.salePrice || 0).toLocaleString()}
                 </span>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               <div>
                 <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-4">
                   Debt Payoff
                 </p>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-sm text-slate-400">
+                  <div className="flex justify-between items-center py-2 border-b border-white/5 gap-4">
+                    <span className="text-xs sm:text-sm text-slate-400 break-words min-w-0">
                       Mortgage Balance
                     </span>
-                    <span className="text-sm font-medium">
+                    <span className="text-xs sm:text-sm font-medium shrink-0">
                       -${costs.mortgagePayoff.toLocaleString()}
                     </span>
                   </div>
                   {costs.otherLiens > 0 && (
-                    <div className="flex justify-between items-center py-2 border-b border-white/5">
-                      <span className="text-sm text-slate-400">
+                    <div className="flex justify-between items-center py-2 border-b border-white/5 gap-4">
+                      <span className="text-xs sm:text-sm text-slate-400 break-words min-w-0">
                         Other Liens
                       </span>
-                      <span className="text-sm font-medium">
+                      <span className="text-xs sm:text-sm font-medium shrink-0">
                         -${costs.otherLiens.toLocaleString()}
                       </span>
                     </div>
                   )}
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-xs font-black text-slate-600 uppercase">
+                  <div className="flex justify-between items-center pt-2 gap-4">
+                    <span className="text-[10px] sm:text-xs font-black text-slate-600 uppercase">
                       Subtotal
                     </span>
-                    <span className="text-sm font-bold text-slate-400">
+                    <span className="text-xs sm:text-sm font-bold text-slate-400 shrink-0">
                       -${results.debtPayoff.toLocaleString()}
                     </span>
                   </div>
@@ -116,33 +116,33 @@ const BreakdownModal: React.FC<BreakdownModalProps> = ({
                   Transaction Costs
                 </p>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-sm text-slate-400">
+                  <div className="flex justify-between items-center py-2 border-b border-white/5 gap-4">
+                    <span className="text-xs sm:text-sm text-slate-400 break-words min-w-0">
                       Listing Fee ({costs.agentCommissionPercent}%)
                     </span>
-                    <span className="text-sm font-medium">
+                    <span className="text-xs sm:text-sm font-medium shrink-0">
                       -${commissionListing.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-sm text-slate-400">
+                  <div className="flex justify-between items-center py-2 border-b border-white/5 gap-4">
+                    <span className="text-xs sm:text-sm text-slate-400 break-words min-w-0">
                       Buyer Fee ({costs.buyerAgentCommissionPercent}%)
                     </span>
-                    <span className="text-sm font-medium">
+                    <span className="text-xs sm:text-sm font-medium shrink-0">
                       -${commissionBuyer.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-white/5">
-                    <span className="text-sm text-slate-400">Closing Fees</span>
-                    <span className="text-sm font-medium">
+                  <div className="flex justify-between items-center py-2 border-b border-white/5 gap-4">
+                    <span className="text-xs sm:text-sm text-slate-400 break-words min-w-0">Closing Fees</span>
+                    <span className="text-xs sm:text-sm font-medium shrink-0">
                       -${closingCostsAmount.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-xs font-black text-slate-600 uppercase">
+                  <div className="flex justify-between items-center pt-2 gap-4">
+                    <span className="text-[10px] sm:text-xs font-black text-slate-600 uppercase">
                       Subtotal
                     </span>
-                    <span className="text-sm font-bold text-slate-400">
+                    <span className="text-xs sm:text-sm font-bold text-slate-400 shrink-0">
                       -${results.sellingExpenses.toLocaleString()}
                     </span>
                   </div>
@@ -151,13 +151,13 @@ const BreakdownModal: React.FC<BreakdownModalProps> = ({
             </div>
           </div>
 
-          <div className="bg-emerald-500 p-8 lg:p-10 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl shadow-emerald-500/20">
-            <div>
-              <p className="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2 opacity-60">
+          <div className="bg-emerald-500 p-6 sm:p-8 lg:p-10 rounded-[2rem] sm:rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8 shadow-2xl shadow-emerald-500/20">
+            <div className="w-full md:w-auto min-w-0">
+              <p className="text-[9px] sm:text-[10px] font-black text-slate-900 uppercase tracking-widest mb-2 opacity-60">
                 Final Estimated Recovery
               </p>
-              <p className="text-6xl font-light tracking-tighter text-slate-950">
-                <span className="text-2xl opacity-40 mr-1">$</span>
+              <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light tracking-tighter text-slate-950 break-words">
+                <span className="text-base sm:text-lg md:text-xl opacity-40 mr-1">$</span>
                 {results.netProceeds.toLocaleString(undefined, {
                   maximumFractionDigits: 0,
                 })}
@@ -165,9 +165,9 @@ const BreakdownModal: React.FC<BreakdownModalProps> = ({
             </div>
             <button
               onClick={() => window.print()}
-              className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-950 hover:bg-slate-900 text-white px-10 py-5 rounded-2xl text-[11px] font-black transition-all uppercase tracking-widest shadow-xl active:scale-95"
+              className="w-full md:w-auto flex items-center justify-center gap-2 bg-slate-950 hover:bg-slate-900 text-white px-6 sm:px-10 py-4 sm:py-5 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black transition-all uppercase tracking-widest shadow-xl active:scale-95 shrink-0"
             >
-              <Printer size={16} /> Print Audit Sheet
+              <Printer size={14} /> Print Audit Sheet
             </button>
           </div>
 
