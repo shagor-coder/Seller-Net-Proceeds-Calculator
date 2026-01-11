@@ -116,7 +116,7 @@ const App: React.FC = () => {
       {/* Modern Navigation */}
       <nav className="h-14 sm:h-16 lg:h-20 shrink-0 px-4 sm:px-6 lg:px-12 flex justify-between items-center z-50 bg-transparent border-b border-black/5 dark:border-white/5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 lg:w-9 lg:h-9 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <div className="w-8 h-8 lg:w-9 lg:h-9 bg-emerald-500 !rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
             <TrendingUp className="text-slate-950" size={18} />
           </div>
           <span className="text-base sm:text-lg lg:text-xl font-light tracking-tighter">
@@ -131,7 +131,7 @@ const App: React.FC = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={toggleTheme}
-            className="w-10 h-10 rounded-xl flex items-center justify-center bg-slate-200/50 dark:bg-white/5 hover:bg-emerald-500/10 transition-all border border-transparent hover:border-emerald-500/20"
+            className="w-10 h-10 !rounded-xl flex items-center justify-center bg-slate-200/50 dark:bg-white/5 hover:bg-emerald-500/10 transition-all border border-transparent hover:border-emerald-500/20"
           >
             {theme === "tool-dark" ? (
               <Sun className="text-orange-400" size={18} />
@@ -139,7 +139,7 @@ const App: React.FC = () => {
               <Moon className="text-indigo-400" size={18} />
             )}
           </button>
-          <button className="hidden sm:flex bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black transition-all shadow-xl shadow-emerald-500/20 uppercase tracking-widest active:scale-95">
+          <button className="hidden sm:flex bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 sm:px-6 py-2 sm:py-2.5 !rounded-xl sm:!rounded-2xl text-[10px] sm:text-[11px] font-black transition-all shadow-xl shadow-emerald-500/20 uppercase tracking-widest active:scale-95">
             Export Report
           </button>
         </div>
@@ -148,7 +148,7 @@ const App: React.FC = () => {
       <main className="flex-1 flex flex-col lg:flex-row p-4 sm:p-6 lg:p-10 gap-6 sm:gap-8 max-w-[1700px] mx-auto w-full relative z-10">
         {/* Input Sidebar */}
         <aside className="w-full lg:w-[400px] shrink-0">
-          <div className="glass rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-6 lg:p-8 flex flex-col h-fit lg:sticky lg:top-10 border border-white/5 shadow-2xl overflow-hidden">
+          <div className="glass !rounded-[2rem] sm:!rounded-[2.5rem] p-5 sm:p-6 lg:p-8 flex flex-col h-fit lg:sticky lg:top-10 border border-white/5 shadow-2xl overflow-hidden">
             <div className="space-y-6">
               <div>
                 <h3
@@ -196,9 +196,9 @@ const App: React.FC = () => {
                 {!showOtherLiens && costs.otherLiens === 0 ? (
                   <button
                     onClick={() => setShowOtherLiens(true)}
-                    className="flex items-center gap-3 w-full p-4 rounded-2xl border border-dashed border-slate-300 dark:border-white/10 text-slate-400 hover:text-emerald-500 hover:border-emerald-500/50 transition-all group mt-2"
+                    className="flex items-center gap-3 w-full p-4 !rounded-2xl border border-dashed border-slate-300 dark:border-white/10 text-slate-400 hover:text-emerald-500 hover:border-emerald-500/50 transition-all group mt-2"
                   >
-                    <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                    <div className="w-8 h-8 !rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all">
                       <Plus size={12} />
                     </div>
                     <span className="text-[10px] font-black uppercase tracking-widest">
@@ -258,10 +258,10 @@ const App: React.FC = () => {
                     <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
                       Title & Closing
                     </label>
-                    <div className="flex bg-slate-200 dark:bg-black/40 p-1 rounded-xl border border-slate-300 dark:border-white/5">
+                    <div className="flex bg-slate-200 dark:bg-black/40 p-1 !rounded-xl border border-slate-300 dark:border-white/5">
                       <button
                         onClick={() => setClosingCostsMode("percent")}
-                        className={`text-[9px] font-black px-3 py-1.5 rounded-lg transition-all ${
+                        className={`text-[9px] font-black px-3 py-1.5 !rounded-lg transition-all ${
                           closingCostsMode === "percent"
                             ? "bg-emerald-500 text-slate-950"
                             : "text-slate-500"
@@ -271,7 +271,7 @@ const App: React.FC = () => {
                       </button>
                       <button
                         onClick={() => setClosingCostsMode("currency")}
-                        className={`text-[9px] font-black px-3 py-1.5 rounded-lg transition-all ${
+                        className={`text-[9px] font-black px-3 py-1.5 !rounded-lg transition-all ${
                           closingCostsMode === "currency"
                             ? "bg-emerald-500 text-slate-950"
                             : "text-slate-500"
@@ -299,10 +299,10 @@ const App: React.FC = () => {
         {/* Dynamic Display Area */}
         <section className="flex-1 flex flex-col gap-8">
           {/* Main Hero Result */}
-          <div className="glass rounded-[2rem] sm:rounded-[2.5rem] lg:rounded-[3.5rem] p-6 sm:p-8 md:p-10 lg:p-20 flex flex-col justify-center relative overflow-hidden border border-white/10 shadow-2xl min-h-[400px] sm:min-h-[500px] lg:min-h-0">
+          <div className="glass !rounded-[2rem] sm:!rounded-[2.5rem] lg:!rounded-[3.5rem] p-6 sm:p-8 md:p-10 lg:p-20 flex flex-col justify-center relative overflow-hidden border border-white/10 shadow-2xl min-h-[400px] sm:min-h-[500px] lg:min-h-0">
             <div className="relative z-10 w-full max-w-4xl">
-              <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6 sm:mb-8">
-                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <div className="inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-5 py-1.5 sm:py-2 !rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6 sm:mb-8">
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 !rounded-full bg-emerald-500 animate-pulse"></span>
                 <p className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-[12px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-[0.3em]">
                   Estimated Take-Home Cash
                 </p>
@@ -327,7 +327,7 @@ const App: React.FC = () => {
                     })}
                   </span>
                 </h2>
-                <div className="h-1.5 w-16 sm:w-24 bg-linear-to-r from-emerald-500 to-transparent mt-3 sm:mt-4 rounded-full"></div>
+                <div className="h-1.5 w-16 sm:w-24 bg-linear-to-r from-emerald-500 to-transparent mt-3 sm:mt-4 !rounded-full"></div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mb-6 sm:mb-8 md:mb-12 lg:mb-16">
@@ -381,7 +381,7 @@ const App: React.FC = () => {
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
                 <button
                   onClick={() => setIsBreakdownOpen(true)}
-                  className="w-full sm:w-auto group flex items-center justify-center gap-3 sm:gap-6 bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 sm:px-10 py-4 sm:py-5 rounded-[2rem] sm:rounded-[2.5rem] text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] transition-all shadow-[0_20px_50px_-10px_rgba(16,185,129,0.3)] active:scale-95"
+                  className="w-full sm:w-auto group flex items-center justify-center gap-3 sm:gap-6 bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 sm:px-10 py-4 sm:py-5 !rounded-[2rem] sm:!rounded-[2.5rem] text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] transition-all shadow-[0_20px_50px_-10px_rgba(16,185,129,0.3)] active:scale-95"
                 >
                   View Full Audit
                   <ArrowRight
@@ -438,9 +438,9 @@ const App: React.FC = () => {
 
           {/* Visual Breakdown Strip */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-            <div className="glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/5">
+            <div className="glass !rounded-2xl sm:!rounded-3xl p-6 sm:p-8 border border-white/5">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500">
+                <div className="w-10 h-10 bg-emerald-500/10 !rounded-xl flex items-center justify-center text-emerald-500">
                   <Percent size={14} />
                 </div>
                 <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">
@@ -458,9 +458,9 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <div className="glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/5">
+            <div className="glass !rounded-2xl sm:!rounded-3xl p-6 sm:p-8 border border-white/5">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400">
+                <div className="w-10 h-10 bg-indigo-500/10 !rounded-xl flex items-center justify-center text-indigo-400">
                   <Scale size={14} />
                 </div>
                 <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">
@@ -479,9 +479,9 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <div className="glass rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/5 sm:col-span-2 md:col-span-1">
+            <div className="glass !rounded-2xl sm:!rounded-3xl p-6 sm:p-8 border border-white/5 sm:col-span-2 md:col-span-1">
               <div className="flex justify-between items-start mb-4">
-                <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-400">
+                <div className="w-10 h-10 bg-orange-500/10 !rounded-xl flex items-center justify-center text-orange-400">
                   <ChartColumnIncreasing size={14} />
                 </div>
                 <span className="text-[10px] font-black text-orange-400 uppercase tracking-widest">

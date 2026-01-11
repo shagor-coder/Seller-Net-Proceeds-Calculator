@@ -66,7 +66,9 @@ const InputGroup: React.FC<InputGroupProps> = ({
   return (
     <div className={`${hideLabel ? "mb-0" : "mb-5"} group`}>
       {!hideLabel && (
-        <label className={`block text-[9px] sm:text-[10px] font-black uppercase tracking-widest mb-2 px-1 ${theme === "tool-light" ? "text-slate-500" : "text-slate-400"}`}>
+        <label
+          className={`block text-[9px] sm:text-[10px] font-black uppercase tracking-widest mb-2 px-1 ${theme === "tool-light" ? "text-slate-500" : "text-slate-400"}`}
+        >
           {label}
         </label>
       )}
@@ -81,7 +83,9 @@ const InputGroup: React.FC<InputGroupProps> = ({
         )}
         {type === "currency" && (
           <div className="absolute inset-y-0 left-10 sm:left-12 flex items-center pointer-events-none z-10">
-            <span className={`font-bold text-xs sm:text-sm md:text-base ${theme === "tool-light" ? "text-slate-500" : "text-slate-400"}`}>
+            <span
+              className={`font-bold text-xs sm:text-sm md:text-base ${theme === "tool-light" ? "text-slate-500" : "text-slate-400"}`}
+            >
               $
             </span>
           </div>
@@ -92,7 +96,7 @@ const InputGroup: React.FC<InputGroupProps> = ({
           className={`block w-full 
             ${theme === "tool-light" ? "bg-white border-slate-300 text-slate-900 placeholder:text-slate-400" : "bg-slate-800/60 border-white/10 text-white placeholder:text-slate-500"}
             border 
-            rounded-xl sm:rounded-2xl text-xs sm:text-sm md:text-base font-bold
+            !rounded-xl sm:!rounded-2xl text-xs sm:text-sm md:text-base font-bold
             caret-emerald-500
             focus:outline-none focus:ring-2 sm:focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500/40 
             transition-all duration-300 
@@ -107,7 +111,9 @@ const InputGroup: React.FC<InputGroupProps> = ({
         />
         {type === "percent" && (
           <div className="absolute inset-y-0 right-0 pr-4 sm:pr-5 flex items-center pointer-events-none">
-            <span className={`text-xs sm:text-sm font-black ${theme === "tool-light" ? "text-slate-500" : "text-slate-400"}`}>
+            <span
+              className={`text-xs sm:text-sm font-black ${theme === "tool-light" ? "text-slate-500" : "text-slate-400"}`}
+            >
               %
             </span>
           </div>

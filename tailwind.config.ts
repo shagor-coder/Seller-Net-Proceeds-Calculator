@@ -1,5 +1,6 @@
 export default {
   darkMode: ["class", '[class*="tool-dark"]'],
+  important: "#tool",
   content: [
     "./index.html",
     "./App.tsx",
@@ -9,6 +10,13 @@ export default {
     "!./dist/**",
   ],
   theme: {
+    screens: {
+      sm: "640px",
+      md: "768px",
+      lg: "1024px",
+      xl: "1280px",
+      "2xl": "1536px",
+    },
     extend: {
       fontFamily: {
         outfit: ["Outfit", "sans-serif"],
